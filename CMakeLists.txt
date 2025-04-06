@@ -10,10 +10,24 @@ set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 project(SDL2Test)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
+set(CMAKE_PREFIX_PATH /usr/local/Cellar/sdl2_ttf/2.24.0)
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS} src)
+find_package(SDL2_ttf REQUIRED)
+
+
+set(SDL2_TTF_INCLUDE_DIR "/usr/local/Cellar/sdl2_ttf/2.24.0/include/SDL2")
+set(SDL2_TTF_LIBRARY "/usr/local/Cellar/sdl2_ttf/2.24.0/lib/libSDL2_ttf.dylib")
+
+
+message(STATUS "SDL2 Include Dirs: ${SDL2_INCLUDE_DIRS}")
+message(STATUS "SDL2_TTF Include Dir: ${SDL2_TTF_INCLUDE_DIR}")
+message(STATUS "SDL2_TTF Library: ${SDL2_TTF_LIBRARY}")
+
+include_directories(${SDL2_INCLUDE_DIRS} src ${SDL2_TTF_INCLUDE_DIR})
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 
 add_executable(SnakeGame src/main.cpp src/game.cpp src/controller.cpp src/renderer.cpp src/snake.cpp)
 string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
-target_link_libraries(SnakeGame ${SDL2_LIBRARIES})
+target_link_libraries(SnakeGame ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARY})
