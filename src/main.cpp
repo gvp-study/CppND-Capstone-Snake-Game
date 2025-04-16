@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include "controller.h"
-#include "game.h"
 #include "renderer.h"
+#include "game.h"
 #include <SDL_ttf.h>
 
 const int WINDOW_WIDTH = 400;

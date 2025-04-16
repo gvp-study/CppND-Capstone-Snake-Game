@@ -1,6 +1,8 @@
 #include "renderer.h"
+#include "game.h"
 #include <iostream>
 #include <string>
+
 
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height,
@@ -38,7 +40,8 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Snake const snake, SDL_Point const &food) {
+void Renderer::Render(Snake const snake, SDL_Point const &food, 
+                      std::vector<Obstacle> const &obstacles) {
   SDL_Rect block;
   block.w = screen_width / grid_width;
   block.h = screen_height / grid_height;
@@ -52,6 +55,15 @@ void Renderer::Render(Snake const snake, SDL_Point const &food) {
   block.x = food.x * block.w;
   block.y = food.y * block.h;
   SDL_RenderFillRect(sdl_renderer, &block);
+
+  // Render obstacles
+  SDL_SetRenderDrawColor(sdl_renderer, 0x88, 0x88, 0x00, 0xFF);
+  for(auto const &obs : obstacles)
+  {
+    block.x = obs.GetPosition().x * block.w;
+    block.y = obs.GetPosition().y * block.h;
+    SDL_RenderFillRect(sdl_renderer, &block);
+  }
 
   // Render snake's body
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);

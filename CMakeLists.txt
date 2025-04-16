@@ -7,7 +7,7 @@ add_definitions(-std=c++17)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
-project(SDL2Test)
+project(SnakeGame)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(CMAKE_PREFIX_PATH /usr/local/Cellar/sdl2_ttf/2.24.0)
@@ -27,7 +27,15 @@ include_directories(${SDL2_INCLUDE_DIRS} src ${SDL2_TTF_INCLUDE_DIR})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+set(SOURCES
+    src/main.cpp
+    src/game.cpp
+    src/snake.cpp
+    src/renderer.cpp
+    src/controller.cpp
+)
 
-add_executable(SnakeGame src/main.cpp src/game.cpp src/controller.cpp src/renderer.cpp src/snake.cpp)
+
+add_executable(SnakeGame ${SOURCES})
 string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(SnakeGame ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARY})

@@ -8,6 +8,7 @@ Game::Game(std::size_t grid_width, std::size_t grid_height)
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
   PlaceFood();
+  PlaceObstacles();
 }
 
 void Game::Run(Controller const &controller, Renderer &renderer,
@@ -25,7 +26,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
     Update();
-    renderer.Render(snake, food);
+    renderer.Render(snake, food, obstacles);
 
     frame_end = SDL_GetTicks();
 
@@ -65,6 +66,25 @@ void Game::PlaceFood() {
   }
 }
 
+void Game::PlaceObstacles() {
+  int x, y;
+  int NObstacles = 2;
+  int count = 0;
+  static bool first = false;
+
+  while (count++ < NObstacles && !first) {
+    x = random_w(engine);
+    y = random_h(engine);
+    // Check that the location is not occupied by a snake item before placing
+    // food.
+    if (!snake.SnakeCell(x, y)) {
+      obstacles.emplace_back(x, y, count % 2 == 0 ? false : true);
+    }
+  }
+  first = true;
+}
+
+
 void Game::Update() {
   if (!snake.alive) return;
 
@@ -73,15 +93,62 @@ void Game::Update() {
   int new_x = static_cast<int>(snake.head_x);
   int new_y = static_cast<int>(snake.head_y);
 
-  // Check if there's food over here
+  // Check if there's food at the current head position
   if (food.x == new_x && food.y == new_y) {
     score++;
     PlaceFood();
-    // Grow snake and increase speed.
     snake.GrowBody();
     snake.speed += 0.02;
   }
-}
 
-int Game::GetScore() const { return score; }
-int Game::GetSize() const { return snake.size; }
+  PlaceObstacles();  // Update any moving obstacles
+
+  // Check collision with obstacles and choose a new direction if needed
+  for (const auto &obs : obstacles) {
+    if (obs.GetPosition().x == new_x && obs.GetPosition().y == new_y) {
+
+      // Try all possible directions to find a valid one
+      std::vector<Snake::Direction> directions = {
+        Snake::Direction::kUp,
+        Snake::Direction::kDown,
+        Snake::Direction::kLeft,
+        Snake::Direction::kRight
+      };
+
+      for (auto dir : directions) {
+        // Skip reversing direction
+        /*
+        if ((snake.direction == Snake::Direction::kUp && dir == Snake::Direction::kDown) ||
+            (snake.direction == Snake::Direction::kDown && dir == Snake::Direction::kUp) ||
+            (snake.direction == Snake::Direction::kLeft && dir == Snake::Direction::kRight) ||
+            (snake.direction == Snake::Direction::kRight && dir == Snake::Direction::kLeft)) {
+          continue;
+        }
+        */
+        int dx = 0, dy = 0;
+        switch (dir) {
+          case Snake::Direction::kUp:    dx = -1; break;
+          case Snake::Direction::kDown:  dx =  1; break;
+          case Snake::Direction::kLeft:  dy = -1; break;
+          case Snake::Direction::kRight: dy =  1; break;
+        }
+
+        int test_x = new_x + dx;
+        int test_y = new_y + dy;
+
+        bool blocked = false;
+        for (const auto &o : obstacles) {
+          if (o.GetPosition().x == test_x && o.GetPosition().y == test_y) {
+            blocked = true;
+            break;
+          }
+        }
+
+        if (!blocked) {
+          snake.direction = dir;
+          return;  // Early exit after changing direction
+        }
+      }
+    }
+  }
+}
