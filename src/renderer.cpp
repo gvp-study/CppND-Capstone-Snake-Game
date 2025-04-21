@@ -40,7 +40,9 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Snake const snake, SDL_Point const &food, 
+void Renderer::Render(Snake const &snake, 
+                      Snake const &ai_snake, 
+                      Food const &food, 
                       std::vector<Obstacle> const &obstacles) {
   SDL_Rect block;
   block.w = screen_width / grid_width;
@@ -51,9 +53,20 @@ void Renderer::Render(Snake const snake, SDL_Point const &food,
   SDL_RenderClear(sdl_renderer);
 
   // Render food
-  SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xCC, 0x00, 0xFF);
-  block.x = food.x * block.w;
-  block.y = food.y * block.h;
+  // Set color based on food type
+  switch (food.type) {
+    case FoodType::Regular:
+      SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);  // white
+      break;
+    case FoodType::Bonus:
+      SDL_SetRenderDrawColor(sdl_renderer, 255, 215, 0, 255);    // gold
+      break;
+    case FoodType::SpeedUp:
+      SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);      // green
+      break;
+  }
+  block.x = food.position.x * block.w;
+  block.y = food.position.y * block.h;
   SDL_RenderFillRect(sdl_renderer, &block);
 
   // Render obstacles
@@ -65,9 +78,17 @@ void Renderer::Render(Snake const snake, SDL_Point const &food,
     SDL_RenderFillRect(sdl_renderer, &block);
   }
 
-  // Render snake's body
+  // Render player snake's body
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   for (SDL_Point const &point : snake.body) {
+    block.x = point.x * block.w;
+    block.y = point.y * block.h;
+    SDL_RenderFillRect(sdl_renderer, &block);
+  }
+
+  // Draw AI snake (blue)
+  SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0xFF, 0xFF);
+  for (SDL_Point const &point : ai_snake.body) {
     block.x = point.x * block.w;
     block.y = point.y * block.h;
     SDL_RenderFillRect(sdl_renderer, &block);
@@ -77,6 +98,15 @@ void Renderer::Render(Snake const snake, SDL_Point const &food,
   block.x = static_cast<int>(snake.head_x) * block.w;
   block.y = static_cast<int>(snake.head_y) * block.h;
   if (snake.alive) {
+    SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x7A, 0xCC, 0xFF);
+  } else {
+    SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
+  }
+  SDL_RenderFillRect(sdl_renderer, &block);
+  // Render ai_snake's head
+  block.x = static_cast<int>(ai_snake.head_x) * block.w;
+  block.y = static_cast<int>(ai_snake.head_y) * block.h;
+  if (ai_snake.alive) {
     SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x7A, 0xCC, 0xFF);
   } else {
     SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);

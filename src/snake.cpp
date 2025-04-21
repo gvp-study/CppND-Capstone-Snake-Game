@@ -2,18 +2,47 @@
 #include <cmath>
 #include <iostream>
 
+Snake::Snake(int grid_width, int grid_height, bool is_ai)
+    : grid_width(grid_width),
+      grid_height(grid_height),
+      head_x(grid_width / 2),
+      head_y(grid_height / 2),
+      is_ai(is_ai) {}
+
+void Snake::SetPath(std::vector<SDL_Point> new_path) {
+  path = std::move(new_path);
+}
+
+void Snake::MoveTowardsTarget() {
+  if (path.empty()) return;
+
+  SDL_Point next = path.front();
+  path.erase(path.begin());
+
+  int dx = next.x - static_cast<int>(head_x);
+  int dy = next.y - static_cast<int>(head_y);
+
+  if (dx == 1) direction = Direction::kRight;
+  else if (dx == -1) direction = Direction::kLeft;
+  else if (dy == 1) direction = Direction::kDown;
+  else if (dy == -1) direction = Direction::kUp;
+}
+
 void Snake::Update() {
+  if (is_ai) {
+    speed = 0.05f;
+    MoveTowardsTarget();
+  }
+
   SDL_Point prev_cell{
       static_cast<int>(head_x),
-      static_cast<int>(
-          head_y)};  // We first capture the head's cell before updating.
+      static_cast<int>(head_y)};  // Previous head cell
+
   UpdateHead();
   SDL_Point current_cell{
       static_cast<int>(head_x),
-      static_cast<int>(head_y)};  // Capture the head's cell after updating.
+      static_cast<int>(head_y)};  // Current Head cell
 
-  // Update all of the body vector items if the snake head has moved to a new
-  // cell.
   if (current_cell.x != prev_cell.x || current_cell.y != prev_cell.y) {
     UpdateBody(current_cell, prev_cell);
   }

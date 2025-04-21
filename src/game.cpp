@@ -1,9 +1,13 @@
 #include "game.h"
+#include "astar.h"
 #include <iostream>
 #include "SDL.h"
 
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
+      ai_snake(grid_width, grid_height, true),
+      grid_width(grid_width),
+      grid_height(grid_height),
       engine(dev()),
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
@@ -26,7 +30,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
     Update();
-    renderer.Render(snake, food, obstacles);
+    renderer.Render(snake, ai_snake, food, obstacles);
 
     frame_end = SDL_GetTicks();
 
@@ -56,14 +60,16 @@ void Game::PlaceFood() {
   while (true) {
     x = random_w(engine);
     y = random_h(engine);
-    // Check that the location is not occupied by a snake item before placing
-    // food.
-    if (!snake.SnakeCell(x, y)) {
-      food.x = x;
-      food.y = y;
-      return;
-    }
+    // Make sure the location is not occupied by the snake
+    if (!snake.SnakeCell(x, y)) 
+      break;
   }
+  // Random position
+  food.position = {x, y};
+
+  // Random type
+  int type = rand() % 3;
+  food.type = static_cast<FoodType>(type);
 }
 
 void Game::PlaceObstacles() {
@@ -88,18 +94,41 @@ void Game::PlaceObstacles() {
 void Game::Update() {
   if (!snake.alive) return;
 
+  std::set<SDL_Point> occupied;
+  for (auto const &point : snake.body) occupied.insert(point);
+  for (auto const &obs : obstacles) occupied.insert(obs.GetPosition());
+  
+  auto path = AStar({static_cast<int>(ai_snake.head_x), static_cast<int>(ai_snake.head_y)},
+                    food.position,
+                    grid_width, grid_height, occupied);
+  ai_snake.SetPath(path);
+  
   snake.Update();
-
+  ai_snake.Update();
+  
   int new_x = static_cast<int>(snake.head_x);
   int new_y = static_cast<int>(snake.head_y);
 
   // Check if there's food at the current head position
-  if (food.x == new_x && food.y == new_y) {
-    score++;
-    PlaceFood();
-    snake.GrowBody();
-    snake.speed += 0.02;
+  if (food.position.x == new_x && food.position.y == new_y) {
+    switch (food.type) {
+      case FoodType::Regular:
+        score += 1;
+        snake.GrowBody();
+        break;
+      case FoodType::Bonus:
+        score += 5;
+        snake.GrowBody();
+        snake.GrowBody(); // grow extra
+        break;
+      case FoodType::SpeedUp:
+        score += 2;
+        snake.speed += 0.05;
+        break;
+    }
+    PlaceFood();  // Place new food
   }
+  
 
   PlaceObstacles();  // Update any moving obstacles
 

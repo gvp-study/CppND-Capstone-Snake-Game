@@ -24,6 +24,7 @@ message(STATUS "SDL2_TTF Include Dir: ${SDL2_TTF_INCLUDE_DIR}")
 message(STATUS "SDL2_TTF Library: ${SDL2_TTF_LIBRARY}")
 
 include_directories(${SDL2_INCLUDE_DIRS} src ${SDL2_TTF_INCLUDE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -31,6 +32,7 @@ set(SOURCES
     src/main.cpp
     src/game.cpp
     src/snake.cpp
+    src/astar.cpp
     src/renderer.cpp
     src/controller.cpp
 )

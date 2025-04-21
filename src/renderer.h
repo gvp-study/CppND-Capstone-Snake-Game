@@ -1,12 +1,14 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "game.h"
 #include <vector>
 #include "SDL.h"
 #include "snake.h"
-#include "game.h"
 
 class Obstacle;
+enum class FoodType;      // Forward declare FoodType
+struct Food;              // Forward declare Food
 
 class Renderer {
  public:
@@ -15,7 +17,7 @@ class Renderer {
 ~Renderer();
 
 //void Render(Snake const snake, SDL_Point const &food);
-void Render(Snake const snake, SDL_Point const &food, std::vector<Obstacle> const &obstacles);
+void Render(Snake const &snake, Snake const &ai_snake, Food const &food, std::vector<Obstacle> const &obstacles);
 void UpdateWindowTitle(int score, int fps);
   SDL_Renderer* GetRenderer(){ return sdl_renderer;}
 

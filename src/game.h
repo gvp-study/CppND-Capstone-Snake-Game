@@ -2,10 +2,12 @@
 #define GAME_H
 
 #include <random>
+#include <set>
 #include "SDL.h"
 #include "controller.h"
 #include "renderer.h"
 #include "snake.h"
+#include "astar.h"
 
 class Renderer;
 
@@ -37,6 +39,13 @@ class Obstacle {
       int direction = 1;
   };
 
+enum class FoodType { Regular, Bonus, SpeedUp };
+
+struct Food
+{
+  SDL_Point position;
+  FoodType type;
+};
 
 class Game {
  public:
@@ -48,9 +57,14 @@ class Game {
 
  private:
   Snake snake;
-  SDL_Point food;
+  Snake ai_snake;
+  Food food;
+
   // Obstacle list
   std::vector<Obstacle> obstacles;
+
+  std::size_t grid_width;
+  std::size_t grid_height;
 
   std::random_device dev;
   std::mt19937 engine;
