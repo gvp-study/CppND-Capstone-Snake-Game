@@ -17,7 +17,7 @@ class Renderer {
 ~Renderer();
 
 //void Render(Snake const snake, SDL_Point const &food);
-void Render(Snake const &snake, Snake const &ai_snake, Food const &food, std::vector<Obstacle> const &obstacles);
+void Render(Snake const &snake, Snake const &comp_snake, Food const &food, std::vector<Obstacle> const &obstacles);
 void UpdateWindowTitle(int score, int fps);
   SDL_Renderer* GetRenderer(){ return sdl_renderer;}
 

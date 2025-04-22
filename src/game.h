@@ -57,7 +57,7 @@ class Game {
 
  private:
   Snake snake;
-  Snake ai_snake;
+  Snake comp_snake;
   Food food;
 
   // Obstacle list

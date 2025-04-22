@@ -5,7 +5,7 @@
 
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
-      ai_snake(grid_width, grid_height, true),
+      comp_snake(grid_width, grid_height, true),
       grid_width(grid_width),
       grid_height(grid_height),
       engine(dev()),
@@ -15,6 +15,51 @@ Game::Game(std::size_t grid_width, std::size_t grid_height)
   PlaceObstacles();
 }
 
+void Game::Run(Controller const &controller, Renderer &renderer,
+               std::size_t target_frame_duration)
+{
+  Uint32 last_time = SDL_GetTicks();
+  float lag = 0.0f;
+  const float MS_PER_UPDATE = static_cast<float>(target_frame_duration);
+
+  int frame_count = 0;
+  Uint32 title_timestamp = SDL_GetTicks();
+  bool running = true;
+
+  while (running)
+  {
+    Uint32 current = SDL_GetTicks();
+    float elapsed = static_cast<float>(current - last_time);
+    last_time = current;
+    lag += elapsed;
+
+    // Handle input once per frame
+    controller.HandleInput(running, snake);
+
+    // Update game logic in fixed-size steps
+    while (lag >= MS_PER_UPDATE)
+    {
+      Update(); // Logic update
+      lag -= MS_PER_UPDATE;
+    }
+
+    // Render the current state (can interpolate if desired)
+    renderer.Render(snake, comp_snake, food, obstacles);
+    frame_count++;
+
+    // Update window title once per second
+    if ((SDL_GetTicks() - title_timestamp) >= 1000)
+    {
+      renderer.UpdateWindowTitle(score, frame_count);
+      frame_count = 0;
+      title_timestamp = SDL_GetTicks();
+    }
+
+    SDL_Delay(1); // avoid 100% CPU usage
+  }
+}
+
+/*
 void Game::Run(Controller const &controller, Renderer &renderer,
                std::size_t target_frame_duration) {
   Uint32 title_timestamp = SDL_GetTicks();
@@ -30,7 +75,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
     Update();
-    renderer.Render(snake, ai_snake, food, obstacles);
+    renderer.Render(snake, comp_snake, food, obstacles);
 
     frame_end = SDL_GetTicks();
 
@@ -54,6 +99,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     }
   }
 }
+*/
 
 void Game::PlaceFood() {
   int x, y;
@@ -98,13 +144,13 @@ void Game::Update() {
   for (auto const &point : snake.body) occupied.insert(point);
   for (auto const &obs : obstacles) occupied.insert(obs.GetPosition());
   
-  auto path = AStar({static_cast<int>(ai_snake.head_x), static_cast<int>(ai_snake.head_y)},
+  auto path = AStar({static_cast<int>(comp_snake.head_x), static_cast<int>(comp_snake.head_y)},
                     food.position,
                     grid_width, grid_height, occupied);
-  ai_snake.SetPath(path);
+  comp_snake.SetPath(path);
   
   snake.Update();
-  ai_snake.Update();
+  comp_snake.Update();
   
   int new_x = static_cast<int>(snake.head_x);
   int new_y = static_cast<int>(snake.head_y);
