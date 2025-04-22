@@ -33,6 +33,7 @@ set(SOURCES
     src/game.cpp
     src/snake.cpp
     src/astar.cpp
+    src/dialog.cpp
     src/renderer.cpp
     src/controller.cpp
 )
