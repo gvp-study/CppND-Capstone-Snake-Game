@@ -34,6 +34,7 @@ set(SOURCES
     src/snake.cpp
     src/astar.cpp
     src/dialog.cpp
+    src/obstacle.cpp
     src/renderer.cpp
     src/controller.cpp
 )

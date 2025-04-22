@@ -15,7 +15,7 @@ public:
     kRight
   };
 
-  Snake(int grid_width, int grid_height, bool is_ai = false);
+  Snake(int grid_width, int grid_height, bool is_computer = false);
 
   void Update();
   void GrowBody();
@@ -31,7 +31,7 @@ public:
   bool alive{true};
   float head_x;
   float head_y;
-  bool is_ai{false};
+  bool is_computer{false};
   SDL_Point target;
   std::vector<SDL_Point> body;
 

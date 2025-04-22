@@ -2,12 +2,12 @@
 #include <cmath>
 #include <iostream>
 
-Snake::Snake(int grid_width, int grid_height, bool is_ai)
+Snake::Snake(int grid_width, int grid_height, bool is_computer)
     : grid_width(grid_width),
       grid_height(grid_height),
       head_x(grid_width / 2),
       head_y(grid_height / 2),
-      is_ai(is_ai) {}
+      is_computer(is_computer) {}
 
 void Snake::SetPath(std::vector<SDL_Point> new_path) {
   path = std::move(new_path);
@@ -29,7 +29,7 @@ void Snake::MoveTowardsTarget() {
 }
 
 void Snake::Update() {
-  if (is_ai) {
+  if (is_computer) {
     speed = 0.05f;
     MoveTowardsTarget();
   }
