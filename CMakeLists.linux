@@ -1,0 +1,74 @@
+cmake_minimum_required(VERSION 3.10)
+project(SnakeGame)
+
+# -----------------------------------------------------------------------------
+# Step 1: Auto-install SDL2_ttf if missing (Linux-only)
+# -----------------------------------------------------------------------------
+if(UNIX AND NOT APPLE)  # Linux (Udacity workspace is Ubuntu-based)
+    # Check if SDL2_ttf is installed
+    execute_process(
+        COMMAND dpkg -l libsdl2-ttf-dev
+        RESULT_VARIABLE SDL2_TTF_INSTALLED
+        OUTPUT_QUIET
+        ERROR_QUIET
+    )
+
+    # Install if missing
+    if(SDL2_TTF_INSTALLED EQUAL 1)
+        message(STATUS "Installing libsdl2-ttf-dev...")
+        execute_process(
+            COMMAND sudo apt-get update
+            COMMAND sudo apt-get install -y libsdl2-ttf-dev
+            RESULT_VARIABLE INSTALL_RESULT
+        )
+        if(NOT INSTALL_RESULT EQUAL 0)
+            message(FATAL_ERROR "Failed to install SDL2_ttf!")
+        endif()
+    endif()
+endif()
+# -----------------------------------------------------------------------------
+
+# Rest of your CMakeLists.txt continues below...
+#find_package(SDL2 REQUIRED)
+#find_package(SDL2_ttf REQUIRED)
+
+# ... (your existing CMake configuration)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_definitions(-std=c++17)
+
+set(CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
+
+project(SDL2Test)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+# For Ubuntu/Linux SDL2_ttf location hint
+set(SDL2_INCLUDE_DIR "/usr/include/SDL2")
+# Add this before find_package()
+set(SDL2_PATH "/usr/lib/x86_64-linux-gnu")
+set(SDL2_TTF_PATH "/usr/lib/x86_64-linux-gnu")
+
+find_library(SDL2_LIBRARY
+    NAMES SDL2
+    PATHS ${SDL2_PATH}
+    REQUIRED
+)
+
+find_library(SDL2_TTF_LIBRARY
+    NAMES SDL2_ttf
+    PATHS ${SDL2_TTF_PATH}
+    REQUIRED
+)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} src)
+
+add_executable(SnakeGame src/main.cpp src/game.cpp src/snake.cpp src/astar.cpp src/dialog.cpp src/obstacle.cpp src/renderer.cpp src/controller.cpp)
+
+set(SDL2_TTF_LIBRARY "/usr/lib/x86_64-linux-gnu/libSDL2_ttf.so")
+
+string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
+target_link_libraries(SnakeGame ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} dl pthread)
+
