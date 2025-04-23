@@ -2,9 +2,19 @@
 #include <iostream>
 #include <fstream>
 
+std::string GetSystemFontPath() {
+    #ifdef __linux__
+        return "/usr/share/fonts/truetype/arial.ttf";
+    #elif __APPLE__
+        return "../assets/fonts/Arial.ttf";
+    #else
+        return "";  // Fallback
+    #endif
+}
 Dialog::Dialog(Renderer* renderer, int score, int ss)
     : renderer(renderer->GetRenderer()), score(score), size(ss) {
-    std::string fontPath = "../assets/fonts/Arial.ttf";
+    //std::string fontPath = "../assets/fonts/Arial.ttf";
+    std::string fontPath = GetSystemFontPath();
     if (!std::ifstream(fontPath)) {
         std::cerr << "Font not found at: " << fontPath << std::endl;
     }

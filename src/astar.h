@@ -7,6 +7,7 @@
 #include <queue>
 #include <map>
 #include <cmath>
+#include <algorithm>
 
 inline int Heuristic(SDL_Point a, SDL_Point b) {
   return abs(a.x - b.x) + abs(a.y - b.y);
