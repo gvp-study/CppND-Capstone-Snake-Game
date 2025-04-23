@@ -4,7 +4,7 @@
 
 std::string GetSystemFontPath() {
     #ifdef __linux__
-        return "/usr/share/fonts/truetype/arial.ttf";
+        return "/usr/share/gazebo-7/media/fonts/arial.ttf";
     #elif __APPLE__
         return "../assets/fonts/Arial.ttf";
     #else
