@@ -106,7 +106,19 @@ bool Snake::SnakeCell(int x, int y) {
   }
   return false;
 }
+// Reverse direction on collision
+Snake::Direction Snake::ChangeDirection(Snake::Direction dir) {
+  switch (dir) {
+    case Snake::Direction::kUp: return Snake::Direction::kDown;
+    case Snake::Direction::kDown: return Snake::Direction::kUp;
+    case Snake::Direction::kLeft: return Snake::Direction::kRight;
+    case Snake::Direction::kRight: return Snake::Direction::kLeft;
+  }
+  // Optional: default return to avoid compiler warning
+  return dir;
+}
 
+/*
 Snake::Direction Snake::ChangeDirection(Snake::Direction dir) {
   switch (dir) {
     case Snake::Direction::kUp: return Snake::Direction::kRight;
@@ -117,12 +129,6 @@ Snake::Direction Snake::ChangeDirection(Snake::Direction dir) {
   // Optional: default return to avoid compiler warning
   return dir;
 }
- /*
-  switch (dir) {
-    case Snake::Direction::kUp: return Snake::Direction::kDown;
-    case Snake::Direction::kDown: return Snake::Direction::kUp;
-    case Snake::Direction::kLeft: return Snake::Direction::kRight;
-    case Snake::Direction::kRight: return Snake::Direction::kLeft;
-  }
-  */
+*/
+
  

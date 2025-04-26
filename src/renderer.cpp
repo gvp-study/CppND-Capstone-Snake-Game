@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height,
                    const std::size_t grid_width, const std::size_t grid_height)
@@ -59,12 +58,13 @@ void Renderer::Render(Snake const &snake,
       SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);  // white
       break;
     case FoodType::Bonus:
-      SDL_SetRenderDrawColor(sdl_renderer, 255, 215, 0, 255);    // gold
+      SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 0, 255);    // yellow
       break;
     case FoodType::SpeedUp:
       SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);      // green
       break;
   }
+
   block.x = food.position.x * block.w;
   block.y = food.position.y * block.h;
   SDL_RenderFillRect(sdl_renderer, &block);
@@ -86,15 +86,15 @@ void Renderer::Render(Snake const &snake,
     SDL_RenderFillRect(sdl_renderer, &block);
   }
 
-  // Draw AI snake (blue)
-  SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0xFF, 0xFF);
+  // Draw Computer snake's body
+  SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0xFF, 0xFF);
   for (SDL_Point const &point : comp_snake.body) {
     block.x = point.x * block.w;
     block.y = point.y * block.h;
     SDL_RenderFillRect(sdl_renderer, &block);
   }
 
-  // Render snake's head
+  // Render snake's head (blue)
   block.x = static_cast<int>(snake.head_x) * block.w;
   block.y = static_cast<int>(snake.head_y) * block.h;
   if (snake.alive) {
@@ -103,11 +103,12 @@ void Renderer::Render(Snake const &snake,
     SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
   }
   SDL_RenderFillRect(sdl_renderer, &block);
-  // Render comp_snake's head
+  
+  // Render comp_snake's head (cyan)
   block.x = static_cast<int>(comp_snake.head_x) * block.w;
   block.y = static_cast<int>(comp_snake.head_y) * block.h;
   if (comp_snake.alive) {
-    SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x7A, 0xCC, 0xFF);
+    SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0xFF, 0xFF);
   } else {
     SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
   }
