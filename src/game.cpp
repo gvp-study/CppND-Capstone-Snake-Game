@@ -99,6 +99,98 @@ void Game::PlaceObstacles()
   first = true;
 }
 
+
+#include <future>  // Make sure to include this
+
+void Game::Update()
+{
+  if (!snake.alive) return;
+
+  // Slow computer snake update only every 5 frames
+  static int comp_update_counter = 0; 
+  const int comp_update_threshold = 5;
+
+  // Prepare path for computer snake first
+  std::set<SDL_Point> occupied;
+  for (auto const &point : snake.body)
+    occupied.insert(point);
+  for (auto const &obs : obstacles)
+    occupied.insert(obs.GetPosition());
+  // Wait for counter to reach threshold to update comp_snake
+  if(comp_update_counter == 0) {
+    // Finds the path as a vector of points from current location to the food
+    auto path = AStar({static_cast<int>(comp_snake.head_x), static_cast<int>(comp_snake.head_y)},
+                      food.position,
+                      grid_width, grid_height, occupied);
+    comp_snake.SetPath(path);
+  }
+     
+  // Launch async task with the user snake.Update using lambda functions
+  auto future = std::async(std::launch::async, [this]() {
+    snake.Update();
+  });
+  // Launch async task with the computer snake.Update only if counter hits 0
+  std::future<void> comp_future;
+  if (comp_update_counter == 0) {
+      comp_future = std::async(std::launch::async, [this]() {
+        comp_snake.Update();
+      });
+  }
+
+  // Wait for both Update()s to complete
+  future.get();
+  // Only Update() the computer snake when counter hits 0
+  if (comp_update_counter == 0) {
+    comp_future.get(); 
+  }
+
+  // Update counter
+  comp_update_counter++;
+  if (comp_update_counter >= comp_update_threshold) {
+    comp_update_counter = 0;
+  }
+
+  // Put food only where the snake head is not
+  int new_x = static_cast<int>(snake.head_x);
+  int new_y = static_cast<int>(snake.head_y);
+
+  if (food.position.x == new_x && food.position.y == new_y) {
+    switch (food.type) {
+      // Grow at regular rate
+      case FoodType::Regular:
+        score += 1;
+        snake.GrowBody();
+        break;
+      // Grow at double rate
+      case FoodType::Bonus:
+        score += 5;
+        snake.GrowBody();
+        snake.GrowBody();
+        break;
+      // Speed up
+      case FoodType::SpeedUp:
+        score += 2;
+        snake.speed += 0.05;
+        break;
+    }
+    // Place new food in random position    
+    PlaceFood();
+  }
+
+  // Update any moving obstacles
+  for (auto &obs : obstacles) {
+    obs.Update();
+  }
+
+  // Check snake head with obstacles and reverse if they collide
+  for (const auto &obs : obstacles) {
+    if (obs.GetPosition().x == new_x && obs.GetPosition().y == new_y) {
+      Snake::Direction dir = snake.ChangeDirection(snake.direction);
+      snake.direction = dir;
+    }
+  }
+}
+/*
 void Game::Update()
 {
   if (!snake.alive)
@@ -160,3 +252,4 @@ void Game::Update()
     }
   }
 }
+  */
