@@ -90,8 +90,7 @@ void Game::PlaceObstacles()
   {
     x = random_w(engine);
     y = random_h(engine);
-    // Check that the location is not occupied by a snake item before placing
-    // food.
+    // Check if the location is occupied by a snake item before placing
     if (!snake.SnakeCell(x, y))
     {
       obstacles.emplace_back(x, y, count % 2 == 0 ? false : true);
@@ -110,13 +109,14 @@ void Game::Update()
     occupied.insert(point);
   for (auto const &obs : obstacles)
     occupied.insert(obs.GetPosition());
-
+  // Finds the path as a vector of points from current location to the food
   auto path = AStar({static_cast<int>(comp_snake.head_x), static_cast<int>(comp_snake.head_y)},
                     food.position,
                     grid_width, grid_height, occupied);
   comp_snake.SetPath(path);
-
+  // Updates the snake based on the user input
   snake.Update();
+  // Updates the snakes head to the next point in the astar path
   comp_snake.Update();
 
   int new_x = static_cast<int>(snake.head_x);
@@ -141,12 +141,16 @@ void Game::Update()
       snake.speed += 0.05;
       break;
     }
-    PlaceFood(); // Place new food
+    // Place new food in random position
+    PlaceFood(); 
   }
 
-  PlaceObstacles(); // Update any moving obstacles
+  // Update any moving obstacles
+  for (auto &obs : obstacles)  {
+    obs.Update();
+  }  
   
-  // Check collision with obstacles
+  // Check snake head with obstacles and reverse if they collide
   for (const auto &obs : obstacles)
   {
     if (obs.GetPosition().x == new_x && obs.GetPosition().y == new_y)

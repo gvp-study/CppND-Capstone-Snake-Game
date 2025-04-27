@@ -17,8 +17,8 @@ This document outlines the significant changes made to the original Snake Game i
 
 3. **Obstacles**
    - Added stationary and moving obstacles
-   - Obstacles block both player and AI snakes
-   - Moving obstacles bounce back when hitting screen edges
+   - Obstacles block both player and Computer snakes
+   - Moving obstacles bounce back when hitting the obstacles.
 
 4. **Game Over Dialog**
    - New dialog box appears when game ends
@@ -28,7 +28,7 @@ This document outlines the significant changes made to the original Snake Game i
 
 5. **Improved Rendering**
    - Different colors for different food types
-   - Visual distinction between player and AI snakes
+   - Visual distinction between player and Computer snakes
    - Obstacles rendered in distinct color
 
 ## Code Changes Breakdown
@@ -38,22 +38,22 @@ This document outlines the significant changes made to the original Snake Game i
 - Added `obstacles` vector and `PlaceObstacles()` method
 - Enhanced `PlaceFood()` to create different food types
 - Modified `Update()` to handle:
-  - AI snake movement via pathfinding
+  - Computer snake movement via pathfinding
   - Food type effects
   - Obstacle collisions
   - New scoring system
 
 ### Snake Class
 
-- Added AI-specific functionality:
+- Added Computer-specific functionality:
   - `SetPath()` for pathfinding directions
-  - `MoveTowardsTarget()` for AI movement
-  - `is_ai` flag to distinguish AI snakes
+  - `MoveTowardsTarget()` for Computer movement
+  - `is_Computer` flag to distinguish Computer snakes
 - Added `ChangeDirection()` helper method
 
 ### Renderer Class
 - Updated to render:
-  - AI snake (blue)
+  - Computer snake (blue)
   - Different food types (white, gold, green)
   - Obstacles (yellow-brown)
 - Added support for SDL_ttf text rendering
@@ -64,14 +64,14 @@ This document outlines the significant changes made to the original Snake Game i
 - `Dialog`: Game over dialog with text input
 
 ## Technical Improvements
-- Added A* pathfinding algorithm for AI snake
+- Added A* pathfinding algorithm for Computer snake
 - Better collision detection system
 - More sophisticated game state management
 - Improved memory management with smart pointers
 - Added error handling for font loading
 
 ## Gameplay Changes
-- Competitive element with AI opponent
+- Competitive element with Computer opponent
 - Strategic decisions about which food to target
 - Need to navigate around obstacles
 - Higher risk/reward with different food types
