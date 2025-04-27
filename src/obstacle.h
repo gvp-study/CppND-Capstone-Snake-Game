@@ -19,7 +19,9 @@ public:
 private:
     SDL_Point position;
     bool moving;
-    int direction = 1;  // 1 for right, -1 for left
+    int direction = 1; // 1 for right, -1 for left
+    int move_counter = 0; // How many frames since last move
+    const int move_threshold = 10; // Move only every 10 frames
 };
 
 #endif // OBSTACLE_H

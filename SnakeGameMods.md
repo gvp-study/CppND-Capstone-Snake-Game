@@ -2,13 +2,21 @@
 
 This document outlines the significant changes made to the original Snake Game implementation.
 
+# Snake Game Demo
+
+<video width="640" height="480" controls>
+  <source src="snakegame.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## Major New Features
 
 1. **Computer Opponent Snake**
-   - Added a second Computer-controlled snake that competes with the player
+   - Added a second computer-controlled snake that competes with the player
    - Uses A* pathfinding algorithm to navigate towards food
-   - Rendered in blue to distinguish from player snake
-
+   - A* uses the Eucleidian distance as the heuristic
+   - Rendered computer snake in cyan to distinguish from player snake in blue
+   
 2. **Enhanced Food System**
    - Three food types with different effects:
      - `Regular`: +1 score, grows snake by 1 segment. Colored white.
@@ -17,8 +25,8 @@ This document outlines the significant changes made to the original Snake Game i
 
 3. **Obstacles**
    - Added stationary and moving obstacles
-   - Obstacles block both player and Computer snakes
-   - Moving obstacles bounce back when hitting the obstacles.
+   - Both player and Computer snakes bounce when hitting obstacles and reverse their movement
+   - Moving obstacles bounce back when hitting the sides
 
 4. **Game Over Dialog**
    - New dialog box appears when game ends
@@ -62,6 +70,7 @@ This document outlines the significant changes made to the original Snake Game i
 - `Obstacle`: Handles obstacle properties and movement
 - `Food`: Enhanced food system with types
 - `Dialog`: Game over dialog with text input
+- AStar: Smart search from current snake head location to the food using astar algorithm in 2D grid.
 
 ## Technical Improvements
 - Added A* pathfinding algorithm for Computer snake
@@ -70,7 +79,7 @@ This document outlines the significant changes made to the original Snake Game i
 - Improved memory management with smart pointers
 - Added error handling for font loading
 
-## Gameplay Changes
+## Possible Gameplay Changes
 - Competitive element with Computer opponent
 - Strategic decisions about which food to target
 - Need to navigate around obstacles

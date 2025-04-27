@@ -10,7 +10,8 @@
 #include <algorithm>
 
 inline int Heuristic(SDL_Point a, SDL_Point b) {
-  return abs(a.x - b.x) + abs(a.y - b.y);
+//  return abs(a.x - b.x) + abs(a.y - b.y);
+    return hypot((a.x - b.x), (a.y - b.y));
 }
 
 inline bool ComparePoints(SDL_Point a, SDL_Point b) {

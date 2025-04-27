@@ -7,9 +7,13 @@ Obstacle::Obstacle(int x, int y, bool moving) : moving(moving) {
 
 void Obstacle::Update() {
     if (moving) {
-        position.x += direction;
-        if (position.x < 0 || position.x >= 32) {
-            direction *= -1;
+        move_counter++;
+        if (move_counter >= move_threshold) {
+            position.x += direction;
+            if (position.x < 0 || position.x >= 32) {
+                direction *= -1;
+            }
+            move_counter = 0; // Reset counter after move
         }
     }
 }
