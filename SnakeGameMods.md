@@ -11,14 +11,13 @@ The video below shows the working of the modified SnakeGame. The player snake is
   <source src="snakegame.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
-
 ## Instructions for Running the Project
+
+The build uses the SDL_ttf_dev package that is not available and has to be installed before running the cmake command. So use the setup.sh to combine the package installation and the cmake and make process as shown below.
+
 ```bash
-mkdir build
-cd build
-cmake ..
-make
-./SnakeGame
+./setup.sh
+build/SnakeGame
 ```
 
 ## Code Structure Overview
